@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 class EngineLifespanSimulator:
     def __init__(self, total_lifespan_years=3):
-        # Конвертация лет в дни (примерное значение, без учета високосных годов)
         self.total_lifespan = total_lifespan_years * 365
         self.remaining_lifespan = self.total_lifespan
 
