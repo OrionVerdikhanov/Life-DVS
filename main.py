@@ -1,3 +1,5 @@
+import time
+import random
 from datetime import datetime, timedelta
 
 class EngineLifespanSimulator:
@@ -5,28 +7,23 @@ class EngineLifespanSimulator:
         self.total_lifespan = total_lifespan_years * 365
         self.remaining_lifespan = self.total_lifespan
 
-        # Настройки списания жизни
-        self.daily_deduction_idle = 1       # Списание, когда двигатель не работает
-        self.daily_deduction_running = 3    # Списание, когда двигатель работает
-        self.maintenance_penalty = 5        # Штраф за пропуск обслуживания
-        self.extreme_weather_penalty = 2    # Штраф за работу в экстремальных условиях
+        self.daily_deduction_idle = 1
+        self.daily_deduction_running = 3
+        self.maintenance_penalty = 5
+        self.extreme_weather_penalty = 2
 
-        # Статусы и тайминги
         self.last_maintenance = datetime.now()
-        self.maintenance_interval = 30      # Интервал обслуживания в днях
+        self.maintenance_interval = 30
 
     def run_day(self, is_running, extreme_weather=False):
-        # Списание жизни в зависимости от работы двигателя
         if is_running:
             self.remaining_lifespan -= self.daily_deduction_running
         else:
             self.remaining_lifespan -= self.daily_deduction_idle
 
-        # Списание за работу в экстремальных условиях
         if extreme_weather:
             self.remaining_lifespan -= self.extreme_weather_penalty
 
-        # Проверка на пропуск обслуживания
         if (datetime.now() - self.last_maintenance).days > self.maintenance_interval:
             self.remaining_lifespan -= self.maintenance_penalty
 
@@ -34,23 +31,25 @@ class EngineLifespanSimulator:
         self.last_maintenance = datetime.now()
 
     def get_remaining_lifespan(self):
-        return max(self.remaining_lifespan, 0)  # Не допускаем отрицательное значение
+        return max(self.remaining_lifespan, 0)
 
-# Создание экземпляра симулятора
-simulator = EngineLifespanSimulator()
+class EngineLifespanSimulatorEnhanced(EngineLifespanSimulator):
+    def simulate_days(self, number_of_days):
+        for day in range(1, number_of_days + 1):
+            is_running = random.choice([True, False])
+            extreme_weather = random.choice([True, False])
+            temperature = random.randint(-30, 40)
 
-# Пример использования: имитация 60 дней работы двигателя
-for day in range(60):
-    # Допустим, двигатель работает каждый второй день
-    is_running = day % 2 == 0
-    # Каждые 15 дней - экстремальные погодные условия
-    extreme_weather = day % 15 == 0
-    simulator.run_day(is_running, extreme_weather)
+            self.run_day(is_running, extreme_weather)
 
-    # Обслуживание на 30-й день
-    if day == 30:
-        simulator.perform_maintenance()
+            print(f"День {day} - температура: {temperature}°C")
+            print("ДВС " + ("работает" if is_running else "не работает"))
+            maintenance_needed = (datetime.now() - self.last_maintenance).days > self.maintenance_interval
+            print("Необходимость в ТО " + ("имеется" if maintenance_needed else "не имеется"))
+            print(f"Оставшаяся продолжительность жизни ДВС: {self.get_remaining_lifespan()} дней\n")
 
-# Получение оставшейся продолжительности жизни двигателя
-remaining_lifespan = simulator.get_remaining_lifespan()
-remaining_lifespan
+            time.sleep(random.uniform(3, 5))
+
+# Создание экземпляра симулятора и запуск симуляции
+simulator_enhanced = EngineLifespanSimulatorEnhanced()
+simulator_enhanced.simulate_days(10)  # Имитация 10 дней работы
